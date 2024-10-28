@@ -12,7 +12,7 @@
 
 #define CANT_EMPLEADOS 4
 #define CANT_CLIENTES 20
-#define CANT_TAREAS 3
+#define CANT_TAREAS 4
 
 #define CLIENTE_VIP 0
 #define CLIENTE_NORMAL 1
@@ -21,6 +21,14 @@
 #define MENU_VEGANO 4
 #define PAPAS_FRITAS 5
 
+// Colores ANSI
+#define COLOR_RESET "\033[0m"
+#define COLOR_CLIENTE_VIP "\x1b[38;5;208m"    // Amarillo brillante
+#define COLOR_CLIENTE_NORMAL "\033[1;36m"  // Cian brillante
+#define COLOR_DESPACHADOR "\033[1;32m"     // Verde brillante
+#define COLOR_HAMBURGUESA "\033[1;34m"     // Azul brillante
+#define COLOR_MENU_VEGANO "\033[1;35m"     // Magenta brillante
+#define COLOR_PAPAS "\033[1;31m"           // Rojo brillante
 
 int pipe_vip_desp[2], pipe_normal_desp[2];
 int pipe_desp_hamb[2], pipe_desp_papas[2], pipe_desp_veg[2];
@@ -39,34 +47,31 @@ void cliente() {
     int pedido = HAMBURGUESA + rand() % 3;
     int pedido_recibido;
 
-    // chequear lo de que si está lleno se va
-    // while (1) {
-        if(vip == CLIENTE_VIP) {
-            printf("Cliente VIP realiza el pedido de un %i.\n", pedido);
-            write(pipe_vip_desp[1], &pedido, TAM); 
-        } 
-        else {
-            printf("Cliente VIP realiza un pedido de un %i.\n", pedido);
-            write(pipe_normal_desp[1], &pedido, TAM); 
-        }
+    if(vip == CLIENTE_VIP) {
+        printf(COLOR_CLIENTE_VIP "Cliente VIP #%d realiza el pedido de un %i.\n" COLOR_RESET, getpid(), pedido);
+        write(pipe_vip_desp[1], &pedido, TAM); 
+    } 
+    else {
+        printf(COLOR_CLIENTE_NORMAL "Cliente Normal #%d realiza el pedido de un %i.\n" COLOR_RESET, getpid(), pedido);
+        write(pipe_normal_desp[1], &pedido, TAM); 
+    }
 
-        switch (pedido) {
-            case HAMBURGUESA :
-                read(pipe_hamb_cli[0], &pedido_recibido, TAM);
-                printf("Cliente recibe una hamburguesa.\n");
-                break;
-            case PAPAS_FRITAS :
-                read(pipe_papas_cli[0], &pedido_recibido, TAM);
-                printf("Cliente recibe unas papas fritas.\n");
-                break;
-            case MENU_VEGANO :
-                read(pipe_veg_cli[0], &pedido_recibido, TAM);
-                printf("Cliente recibe un menú vegano.\n");
-                break;
-            default:
-                break;
-        }
-    // }
+    switch (pedido) {
+        case HAMBURGUESA :
+            read(pipe_hamb_cli[0], &pedido_recibido, TAM);
+            printf(COLOR_CLIENTE_VIP "Cliente #%d recibe una hamburguesa.\n" COLOR_RESET, getpid());
+            break;
+        case PAPAS_FRITAS :
+            read(pipe_papas_cli[0], &pedido_recibido, TAM);
+            printf(COLOR_CLIENTE_VIP "Cliente #%d recibe unas papas fritas.\n" COLOR_RESET, getpid());
+            break;
+        case MENU_VEGANO :
+            read(pipe_veg_cli[0], &pedido_recibido, TAM);
+            printf(COLOR_CLIENTE_VIP "Cliente #%d recibe un menú vegano.\n" COLOR_RESET, getpid());
+            break;
+        default:
+            break;
+    }
 
     close(pipe_vip_desp[1]);
     close(pipe_normal_desp[1]);
@@ -88,24 +93,24 @@ void despachador() {
 
     while (1) {
         if(read(pipe_vip_desp[0], &menu_pedido, TAM) > 0) {
-            printf("Llega un pedido VIP.\n");
+            printf(COLOR_DESPACHADOR "Llega un pedido VIP.\n" COLOR_RESET);
         }
         else {
             read(pipe_normal_desp[0], &menu_pedido, TAM);
-            printf("Llega un pedido normal.\n");
+            printf(COLOR_DESPACHADOR "Llega un pedido normal.\n" COLOR_RESET);
         }
 
         switch (menu_pedido) {
             case HAMBURGUESA:
-                printf("Despachador manda a cocinar una hamburguesa.\n");
+                printf(COLOR_HAMBURGUESA "Despachador manda a cocinar una hamburguesa.\n" COLOR_RESET);
                 write(pipe_desp_hamb[1], &menu_pedido, TAM); 
                 break;
             case PAPAS_FRITAS: 
-                printf("Despachador manda a cocinar una papas fritas.\n");
+                printf(COLOR_PAPAS "Despachador manda a cocinar unas papas fritas.\n" COLOR_RESET);
                 write(pipe_desp_papas[1], &menu_pedido, TAM); 
                 break;    
             case MENU_VEGANO:
-                printf("Despachador manda a cocinar una menu vegano.\n");
+                printf(COLOR_MENU_VEGANO "Despachador manda a cocinar un menú vegano.\n" COLOR_RESET);
                 write(pipe_desp_veg[1], &menu_pedido, TAM);
                 break;
             default:
@@ -125,11 +130,12 @@ void hamburguesa_simple() {
     close(pipe_hamb_cli[0]);
     
     int pedido;
-
-    read(pipe_desp_hamb[0], &pedido, TAM);
-    printf("Empleado prepara una hamburguesa.\n");
-    sleep(1);
-    write(pipe_hamb_cli[1], &pedido, TAM);
+    while(1) {
+        read(pipe_desp_hamb[0], &pedido, TAM);
+        printf(COLOR_HAMBURGUESA "Empleado prepara una hamburguesa.\n" COLOR_RESET);
+        sleep(1);
+        write(pipe_hamb_cli[1], &pedido, TAM);
+    }
 
     close(pipe_desp_hamb[0]);
     close(pipe_hamb_cli[1]);
@@ -140,11 +146,12 @@ void menu_vegano() {
     close(pipe_veg_cli[0]);
     
     int pedido;
-
-    read(pipe_desp_veg[0], &pedido, TAM);
-    printf("Empleado prepara una hamburguesa.\n");
-    sleep(1);
-    write(pipe_veg_cli[1], &pedido, TAM);
+    while(1) {
+        read(pipe_desp_veg[0], &pedido, TAM);
+        printf(COLOR_MENU_VEGANO "Empleado prepara un menú vegano.\n" COLOR_RESET);
+        sleep(1);
+        write(pipe_veg_cli[1], &pedido, TAM);
+    }
 
     close(pipe_desp_veg[0]);
     close(pipe_veg_cli[1]);
@@ -155,12 +162,13 @@ void papas_fritas() {
     close(pipe_papas_cli[0]);
     
     int pedido;
-
-    read(pipe_desp_papas[0], &pedido, TAM);
-    printf("Empleado prepara una papas fritas.\n");
-    sleep(1);
-    write(pipe_papas_cli[1], &pedido, TAM);
-
+    while(1) {
+        read(pipe_desp_papas[0], &pedido, TAM);
+        printf(COLOR_PAPAS "Empleado prepara unas papas fritas.\n" COLOR_RESET);
+        sleep(1);
+        write(pipe_papas_cli[1], &pedido, TAM);
+    }
+    
     close(pipe_desp_papas[0]);
     close(pipe_papas_cli[1]);
 }
@@ -189,10 +197,10 @@ int main() {
 
     crear_proceso(despachador, "Error en la creación del proceso despachador.");
 
-    void (*empleado_funcs[CANT_TAREAS])() = {hamburguesa_simple, menu_vegano, papas_fritas};
+    void (*empleado_funcs[CANT_TAREAS])() = {hamburguesa_simple, menu_vegano, papas_fritas, papas_fritas};
 
     for (int i = 0; i < CANT_EMPLEADOS; i++) {
-        crear_proceso(empleado_funcs[i % CANT_TAREAS], "Error en la creación del proceso empleado.");
+        crear_proceso(empleado_funcs[i], "Error en la creación del proceso empleado.");
     }
 
     for (int i = 0; i < CANT_CLIENTES; i++) {
