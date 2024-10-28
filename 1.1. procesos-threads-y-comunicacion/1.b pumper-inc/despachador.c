@@ -20,7 +20,7 @@ int main() {
                 strcpy(tipo_cliente_s, "NORMAL");
             }
 
-            printf("El despachador atiende al cliente %d de tipo %s.\n", orden.id_cliente, tipo_cliente_s);
+            printf(YELLOW "El despachador atiende al cliente %d de tipo %s.\n" RESET, orden.id_cliente, tipo_cliente_s);
             usleep(TIME_U);
             orden.tipo = orden.menu;        
             msgsnd(msg_id, &orden, LONGITUD, 0);

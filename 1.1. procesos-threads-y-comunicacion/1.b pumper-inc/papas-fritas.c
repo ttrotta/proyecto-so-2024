@@ -11,7 +11,7 @@ int main() {
 
     while (1) {
         msgrcv(msg_id, &order, LONGITUD, PAPAS_FRITAS, 0);
-        printf("Se preparan papas fritas para cliente %d.\n", order.id_cliente);
+        printf(MAGENTA "Se preparan papas fritas para cliente %d.\n" RESET, order.id_cliente);
         usleep(TIME_U);
         order.tipo = order.id_cliente + DIFERENCIADOR;
         msgsnd(msg_id, &order, LONGITUD, 0);

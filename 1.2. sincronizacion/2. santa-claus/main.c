@@ -17,15 +17,15 @@
 #define TIME 10000
 
 sem_t semSanta, semRenos, semElfos, cantRenos, cantElfos;
-pthread_mutex_t mutex;
+pthread_mutex_t mutexRenos, mutexElfos;
 
 void* santa(void *arg) {
     while(1){
         sem_wait(&semSanta);
         printf(COLOR_ROJO "\nSanta es despertado!\n\n" COLOR_RESET);
         usleep(TIME);
-
-        pthread_mutex_lock(&mutex);
+        
+        pthread_mutex_lock(&mutexRenos); // caso re justo cuando tengo 8 renos
             if(sem_trywait(&cantRenos) == -1) { // renos despertaron a santa
                 printf(COLOR_NARANJA "Llegaron todos los renos y santa prepara su trineo.\n" COLOR_RESET);
                 usleep(TIME);
@@ -46,14 +46,14 @@ void* santa(void *arg) {
                 printf(COLOR_NARANJA "Los 3 elfos resolvieron sus problemas y se van.\n\n" COLOR_RESET);
                 sem_post(&semElfos);
             }
-        pthread_mutex_unlock(&mutex);
+        pthread_mutex_unlock(&mutexRenos);
     }
     pthread_exit(NULL);
 }
 
 void* renos(void *arg) {
     while(1){
-        pthread_mutex_lock(&mutex);
+        pthread_mutex_lock(&mutexRenos);
             sem_wait(&cantRenos);
             usleep(TIME);
             if(sem_trywait(&cantRenos) == 0) { // si no es el último
@@ -64,9 +64,9 @@ void* renos(void *arg) {
                 printf(COLOR_AMARILLO "Vuelve el último reno y va a despertar a Santa.\n\n" COLOR_RESET);
                 sem_post(&semSanta);
             }
-        pthread_mutex_unlock(&mutex);
+        pthread_mutex_unlock(&mutexRenos);
         sem_wait(&semRenos); // esperando la vuelta de los renos, para irse de vacaciones
-         sleep(1); // este sleep libera de la inanición a los elfos
+        // sleep(1); // este sleep libera de la inanición a los elfos
     }
     pthread_exit(NULL); 
 }
@@ -74,7 +74,7 @@ void* renos(void *arg) {
 void* elfos(void *arg) {
     while(1){
         sem_wait(&semElfos);
-        pthread_mutex_lock(&mutex);
+        pthread_mutex_lock(&mutexElfos);
             sem_wait(&cantElfos);
             if(sem_trywait(&cantElfos) == 0) {
                 sem_post(&semElfos);
@@ -87,7 +87,7 @@ void* elfos(void *arg) {
                 sem_post(&semSanta);
                 usleep(TIME);
             }
-        pthread_mutex_unlock(&mutex);
+        pthread_mutex_unlock(&mutexElfos);
     }
     pthread_exit(NULL);
 }
@@ -102,7 +102,8 @@ int main() {
     sem_init(&cantRenos, 0, CANT_RENOS);
     sem_init(&cantElfos, 0, MAX_ELFOS_PROBLEMAS);
 
-    pthread_mutex_init(&mutex, NULL);
+    pthread_mutex_init(&mutexRenos, NULL);
+    pthread_mutex_init(&mutexElfos, NULL);
 
     pthread_create(&santa_t, NULL, santa, NULL);
 
@@ -130,7 +131,8 @@ int main() {
     sem_destroy(&cantRenos);
     sem_destroy(&cantElfos);
 
-    pthread_mutex_destroy(&mutex);
+    pthread_mutex_destroy(&mutexRenos);
+    pthread_mutex_destroy(&mutexElfos);
 
     return 0;
 }

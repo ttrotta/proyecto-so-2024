@@ -7,7 +7,7 @@
 #define COLOR_ROJO "\x1b[31m"
 #define COLOR_VERDE "\x1b[32m"
 #define COLOR_AMARILLO "\x1b[33m"
-#define COLOR_AZUL "\x1b[34m"
+#define COLOR_NARANJA "\x1b[38;5;208m"
 #define COLOR_MAGENTA "\x1b[35m"
 #define COLOR_CIAN "\x1b[36m"
 #define COLOR_RESET "\x1b[0m"
@@ -74,7 +74,7 @@ void *operarioEquipamientoExtra(void *arg) {
         sem_post(&semRueda);
 
         sem_wait(&semEquipamiento);
-        printf(COLOR_AZUL "El operario 6 agrega equipamiento extra a la moto.\n" COLOR_RESET);
+        printf(COLOR_NARANJA "El operario 6 agrega equipamiento extra a la moto.\n" COLOR_RESET);
         sleep(TIME);
         sem_post(&semRueda);
         sem_post(&semRueda);
