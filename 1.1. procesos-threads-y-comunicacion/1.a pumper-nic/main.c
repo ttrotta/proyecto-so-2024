@@ -12,7 +12,6 @@
 
 #define CANT_EMPLEADOS 4
 #define CANT_CLIENTES 20
-#define CANT_TAREAS 4
 
 #define CLIENTE_VIP 0
 #define CLIENTE_NORMAL 1
@@ -21,14 +20,14 @@
 #define MENU_VEGANO 4
 #define PAPAS_FRITAS 5
 
-// Colores ANSI
+#define CANT_ITERACIONES 50
 #define COLOR_RESET "\033[0m"
-#define COLOR_CLIENTE_VIP "\x1b[38;5;208m"    // Amarillo brillante
-#define COLOR_CLIENTE_NORMAL "\033[1;36m"  // Cian brillante
-#define COLOR_DESPACHADOR "\033[1;32m"     // Verde brillante
-#define COLOR_HAMBURGUESA "\033[1;34m"     // Azul brillante
-#define COLOR_MENU_VEGANO "\033[1;35m"     // Magenta brillante
-#define COLOR_PAPAS "\033[1;31m"           // Rojo brillante
+#define COLOR_CLIENTE_VIP "\x1b[38;5;208m"    
+#define COLOR_CLIENTE_NORMAL "\033[1;36m"  
+#define COLOR_DESPACHADOR "\033[1;32m"    
+#define COLOR_HAMBURGUESA "\033[1;34m"     
+#define COLOR_MENU_VEGANO "\033[1;35m"     
+#define COLOR_PAPAS "\033[1;31m"          
 
 int pipe_vip_desp[2], pipe_normal_desp[2];
 int pipe_desp_hamb[2], pipe_desp_papas[2], pipe_desp_veg[2];
@@ -43,34 +42,44 @@ void cliente() {
     close(pipe_papas_cli[1]);
     close(pipe_veg_cli[1]);
 
-    int vip = (rand() % 4 == 0) ? CLIENTE_VIP : CLIENTE_NORMAL; // 25% de salir VIP
-    int pedido = HAMBURGUESA + rand() % 3;
-    int pedido_recibido;
+    int vip = (rand() % 4 == 0) ? CLIENTE_VIP : CLIENTE_NORMAL; 
+    
+    for (int i = 0; i < CANT_ITERACIONES; i++) {
+        int cola_llena = rand() % 20;
 
-    if(vip == CLIENTE_VIP) {
-        printf(COLOR_CLIENTE_VIP "Cliente VIP #%d realiza el pedido de un %i.\n" COLOR_RESET, getpid(), pedido);
-        write(pipe_vip_desp[1], &pedido, TAM); 
-    } 
-    else {
-        printf(COLOR_CLIENTE_NORMAL "Cliente Normal #%d realiza el pedido de un %i.\n" COLOR_RESET, getpid(), pedido);
-        write(pipe_normal_desp[1], &pedido, TAM); 
-    }
+        if(cola_llena == 1) {
+            printf("La cola está llena y el cliente se va.\n");
+            continue; 
+        }
 
-    switch (pedido) {
-        case HAMBURGUESA :
-            read(pipe_hamb_cli[0], &pedido_recibido, TAM);
-            printf(COLOR_CLIENTE_VIP "Cliente #%d recibe una hamburguesa.\n" COLOR_RESET, getpid());
-            break;
-        case PAPAS_FRITAS :
-            read(pipe_papas_cli[0], &pedido_recibido, TAM);
-            printf(COLOR_CLIENTE_VIP "Cliente #%d recibe unas papas fritas.\n" COLOR_RESET, getpid());
-            break;
-        case MENU_VEGANO :
-            read(pipe_veg_cli[0], &pedido_recibido, TAM);
-            printf(COLOR_CLIENTE_VIP "Cliente #%d recibe un menú vegano.\n" COLOR_RESET, getpid());
-            break;
-        default:
-            break;
+        int pedido = HAMBURGUESA + rand() % 3;
+        int pedido_recibido;
+
+        if(vip == CLIENTE_VIP) {
+            printf(COLOR_CLIENTE_VIP "Cliente VIP #%d realiza el pedido de un %i.\n" COLOR_RESET, getpid(), pedido);
+            write(pipe_vip_desp[1], &pedido, TAM); 
+        } 
+        else {
+            printf(COLOR_CLIENTE_NORMAL "Cliente Normal #%d realiza el pedido de un %i.\n" COLOR_RESET, getpid(), pedido);
+            write(pipe_normal_desp[1], &pedido, TAM); 
+        }
+
+        switch (pedido) {
+            case HAMBURGUESA :
+                read(pipe_hamb_cli[0], &pedido_recibido, TAM);
+                printf(COLOR_CLIENTE_VIP "Cliente #%d recibe una hamburguesa.\n" COLOR_RESET, getpid());
+                break;
+            case PAPAS_FRITAS :
+                read(pipe_papas_cli[0], &pedido_recibido, TAM);
+                printf(COLOR_CLIENTE_VIP "Cliente #%d recibe unas papas fritas.\n" COLOR_RESET, getpid());
+                break;
+            case MENU_VEGANO :
+                read(pipe_veg_cli[0], &pedido_recibido, TAM);
+                printf(COLOR_CLIENTE_VIP "Cliente #%d recibe un menú vegano.\n" COLOR_RESET, getpid());
+                break;
+            default:
+                break;
+        }
     }
 
     close(pipe_vip_desp[1]);
@@ -89,7 +98,7 @@ void despachador() {
 
     int menu_pedido;
 
-    fcntl(pipe_vip_desp[0], F_SETFL, O_NONBLOCK); // El pipe de vip es no bloqueante
+    fcntl(pipe_vip_desp[0], F_SETFL, O_NONBLOCK); 
 
     while (1) {
         if(read(pipe_vip_desp[0], &menu_pedido, TAM) > 0) {
@@ -99,7 +108,7 @@ void despachador() {
             read(pipe_normal_desp[0], &menu_pedido, TAM);
             printf(COLOR_DESPACHADOR "Llega un pedido normal.\n" COLOR_RESET);
         }
-
+        // Analizar caso de todos VIP 
         switch (menu_pedido) {
             case HAMBURGUESA:
                 printf(COLOR_HAMBURGUESA "Despachador manda a cocinar una hamburguesa.\n" COLOR_RESET);
@@ -193,11 +202,9 @@ int main() {
         return 1;
     }
 
-    fcntl(pipe_vip_desp[0], F_SETFL, O_NONBLOCK);
-
     crear_proceso(despachador, "Error en la creación del proceso despachador.");
 
-    void (*empleado_funcs[CANT_TAREAS])() = {hamburguesa_simple, menu_vegano, papas_fritas, papas_fritas};
+    void (*empleado_funcs[CANT_EMPLEADOS])() = {hamburguesa_simple, menu_vegano, papas_fritas, papas_fritas};
 
     for (int i = 0; i < CANT_EMPLEADOS; i++) {
         crear_proceso(empleado_funcs[i], "Error en la creación del proceso empleado.");

@@ -2,7 +2,7 @@
 
 int main() {
     pid_t despachador;
-    pid_t empleado1 , empleado2, empleado3, empleado4;
+    pid_t empleado1, empleado2, empleado3, empleado4;
 
     int msg_id = msgget(KEY, IPC_CREAT | 0666);
     if (msg_id == -1) {
@@ -10,44 +10,43 @@ int main() {
         exit(1);
     }
 
-    char *argsD[] = { "./despachador", NULL };
+    char *argsD[] = { "./ejecutables/despachador", NULL };
     despachador = fork();
     if (despachador == 0) {
-        execv("./despachador", argsD);
+        execv("./ejecutables/despachador", argsD);
         perror("execv falló");
         exit(1);
     }
 
-    char *argsH[] = { "./hamburguesa-simple", NULL };
+    char *argsH[] = { "./ejecutables/hamburguesa-simple", NULL };
     empleado1 = fork();
     if (empleado1 == 0) {
-        execv("./hamburguesa-simple", argsH);
+        execv("./ejecutables/hamburguesa-simple", argsH);
         perror("execv falló");
         exit(1);
     }
 
-    char *argsV[] = { "./menu-vegano", NULL };
+    char *argsV[] = { "./ejecutables/menu-vegano", NULL };
     empleado2 = fork();
     if (empleado2 == 0) {
-        execv("./menu-vegano", argsV);
+        execv("./ejecutables/menu-vegano", argsV);
         perror("execv falló");
         exit(1);
     }
 
-    char *argsP[] = { "./papas-fritas", NULL };
+    char *argsP[] = { "./ejecutables/papas-fritas", NULL };
     empleado3 = fork();
     if (empleado3 == 0) {
-        execv("./papas-fritas", argsP);
+        execv("./ejecutables/papas-fritas", argsP);
         perror("execv falló");
         exit(1);
     }
     empleado4 = fork();
     if (empleado4 == 0)  {
-        execv("./papas-fritas", argsP);
+        execv("./ejecutables/papas-fritas", argsP);
         perror("execv falló");
         exit(1);
     }
-
 
     for (int i = 0; i < CANT_CLIENTES; i++) {        
         int tipo_cliente = (rand() % 4 == 0) ? CLIENTE_VIP : CLIENTE_NORMAL; // 25% de salir VIP
@@ -66,14 +65,14 @@ int main() {
             sprintf(tipo_menu_str, "%d", tipo_menu);
 
             char *argsC[] = {
-                "./cliente",    
+                "./ejecutables/cliente",    
                 cliente_id,      
                 tipo_cliente_str, 
                 tipo_menu_str,    
                 NULL             
             };
 
-            execv("./cliente", argsC);
+            execv("./ejecutables/cliente", argsC);
 
             perror("execv falló");
             exit(1);

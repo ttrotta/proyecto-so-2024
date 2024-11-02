@@ -4,6 +4,7 @@
 #include <semaphore.h>
 #include <unistd.h>
 
+
 #define COLOR_ROJO "\x1b[31m"
 #define COLOR_VERDE "\x1b[92m"
 #define COLOR_AMARILLO "\x1b[33m"
@@ -14,34 +15,36 @@
 #define CANT_ELFOS 10
 #define MAX_ELFOS_PROBLEMAS 3
 
-#define TIME 10000
+#define TIEMPO 10000
+#define TIEMPO_LLEGADA 500000
 
-sem_t semSanta, semRenos, semElfos, cantRenos, cantElfos;
+sem_t semSanta, semRenos, semElfos, cantRenos, cantElfos, semElfosSanta;
 pthread_mutex_t mutexRenos, mutexElfos;
 
 void* santa(void *arg) {
     while(1){
         sem_wait(&semSanta);
         printf(COLOR_ROJO "\nSanta es despertado!\n\n" COLOR_RESET);
-        usleep(TIME);
+        usleep(TIEMPO);
         
-        pthread_mutex_lock(&mutexRenos); // caso re justo cuando tengo 8 renos
+        pthread_mutex_lock(&mutexRenos); 
             if(sem_trywait(&cantRenos) == -1) { // renos despertaron a santa
                 printf(COLOR_NARANJA "Llegaron todos los renos y santa prepara su trineo.\n" COLOR_RESET);
-                usleep(TIME);
+                usleep(TIEMPO);
                 for(int i = 0; i < CANT_RENOS; i++) {
                     sem_post(&semRenos);
                     sem_post(&cantRenos);
                 }
                 printf(COLOR_NARANJA "Los renos hicieron su trabajo y vuelven de vacaciones.\n" COLOR_RESET);
-                usleep(TIME);
+                usleep(TIEMPO);
             }
             else { // elfos despertaron a santa
-                sem_post(&cantRenos); // dejamos como estaban los renos
+                sem_post(&cantRenos); 
                 printf(COLOR_NARANJA "Santa ayuda a los tres elfos que pidieron ayuda.\n" COLOR_RESET);
-                usleep(TIME);
+                usleep(TIEMPO);
                 for (int i = 0; i < MAX_ELFOS_PROBLEMAS; i++) {
                     sem_post(&cantElfos);
+                    sem_post(&semElfosSanta);
                 }
                 printf(COLOR_NARANJA "Los 3 elfos resolvieron sus problemas y se van.\n\n" COLOR_RESET);
                 sem_post(&semElfos);
@@ -55,18 +58,18 @@ void* renos(void *arg) {
     while(1){
         pthread_mutex_lock(&mutexRenos);
             sem_wait(&cantRenos);
-            usleep(TIME);
-            if(sem_trywait(&cantRenos) == 0) { // si no es el último
-                sem_post(&cantRenos); // volvemos a estado original ya que decrementamos
+            usleep(TIEMPO);
+            if(sem_trywait(&cantRenos) == 0) { 
+                sem_post(&cantRenos); 
                 printf(COLOR_AMARILLO "Vuelve un reno al Polo Norte luego de vacaciones.\n" COLOR_RESET);
             }
-            else { // si es el último
+            else { 
                 printf(COLOR_AMARILLO "Vuelve el último reno y va a despertar a Santa.\n\n" COLOR_RESET);
                 sem_post(&semSanta);
             }
         pthread_mutex_unlock(&mutexRenos);
-        sem_wait(&semRenos); // esperando la vuelta de los renos, para irse de vacaciones
-        // sleep(1); // este sleep libera de la inanición a los elfos
+        sem_wait(&semRenos); 
+        usleep(TIEMPO_LLEGADA); // simulación de llegada
     }
     pthread_exit(NULL); 
 }
@@ -80,14 +83,15 @@ void* elfos(void *arg) {
                 sem_post(&semElfos);
                 sem_post(&cantElfos);
                 printf(COLOR_VERDE "Elfo en problemas para hacer juguetes!\n" COLOR_RESET);
-                usleep(TIME);
+                usleep(TIEMPO);
             }
             else {
                 printf(COLOR_VERDE "Llega un tercer elfo en problemas, van a buscar a Santa.\n" COLOR_RESET);
                 sem_post(&semSanta);
-                usleep(TIME);
+                usleep(TIEMPO);
             }
         pthread_mutex_unlock(&mutexElfos);
+        sem_wait(&semElfosSanta);
     }
     pthread_exit(NULL);
 }
@@ -99,6 +103,7 @@ int main() {
     sem_init(&semSanta, 0, 0);
     sem_init(&semRenos, 0, 0);
     sem_init(&semElfos, 0, 1);
+    sem_init(&semElfosSanta, 0, 0);
     sem_init(&cantRenos, 0, CANT_RENOS);
     sem_init(&cantElfos, 0, MAX_ELFOS_PROBLEMAS);
 
@@ -130,6 +135,7 @@ int main() {
     sem_destroy(&semElfos);
     sem_destroy(&cantRenos);
     sem_destroy(&cantElfos);
+    sem_destroy(&semElfosSanta);
 
     pthread_mutex_destroy(&mutexRenos);
     pthread_mutex_destroy(&mutexElfos);

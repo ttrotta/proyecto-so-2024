@@ -17,7 +17,7 @@
 sem_t semRueda, semCuadro, semMotor, semPintores, semEquipamiento;
 
 void *operarioRueda(void *arg) {
-    while (1) {
+    while(1) {
         sem_wait(&semRueda);
         printf(COLOR_CIAN "El operario 1 arma una rueda.\n" COLOR_RESET);
         sleep(TIME);
@@ -27,7 +27,7 @@ void *operarioRueda(void *arg) {
 }
 
 void *operarioCuadro(void *arg) {
-    while (1) {
+    while(1) {
         sem_wait(&semCuadro);
         sem_wait(&semCuadro);
         printf(COLOR_AMARILLO "El operario 2 arma el cuadro (chasis).\n" COLOR_RESET);
@@ -38,7 +38,7 @@ void *operarioCuadro(void *arg) {
 }
 
 void *operarioMotor(void *arg) {
-    while (1) {
+    while(1) {
         sem_wait(&semMotor);
         printf(COLOR_MAGENTA "El operario 3 agrega el motor al vehículo.\n" COLOR_RESET);
         sleep(TIME);
@@ -48,7 +48,7 @@ void *operarioMotor(void *arg) {
 }
 
 void *operarioPintor1(void *arg) {
-    while (1) {
+    while(1) {
         sem_wait(&semPintores);
         printf(COLOR_VERDE "El operario 4 pinta de verde la moto.\n" COLOR_RESET);
         sleep(TIME);
@@ -58,7 +58,7 @@ void *operarioPintor1(void *arg) {
 }
 
 void *operarioPintor2(void *arg) {
-    while (1) {
+    while(1) {
         sem_wait(&semPintores);
         printf(COLOR_ROJO "El operario 5 pinta de rojo la moto.\n" COLOR_RESET);
         sleep(TIME);
@@ -68,7 +68,7 @@ void *operarioPintor2(void *arg) {
 }
 
 void *operarioEquipamientoExtra(void *arg) {
-    while (1) {
+    while(1) {
         sem_wait(&semEquipamiento);
         sem_post(&semRueda);
         sem_post(&semRueda);
