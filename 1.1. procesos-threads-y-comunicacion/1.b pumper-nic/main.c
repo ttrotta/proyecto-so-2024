@@ -78,9 +78,6 @@ int main() {
             exit(1);
         }
     }
-    // for (int i = 0; i < CANT_CLIENTES + 5; i++) {
-    //     wait(NULL);
-    // }
 
     printf("La casa de comidas cerró.\n");
 
