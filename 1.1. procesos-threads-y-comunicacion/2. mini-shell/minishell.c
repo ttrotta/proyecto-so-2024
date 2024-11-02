@@ -17,7 +17,8 @@ void ejecutarComando(char* imagen, char** argumentos){
         exit(1);
     } else if (pid == 0) {
         execv(imagen, argumentos);
-        printf("ERROR: No se pudo cargar el comando\n");
+        perror("ERROR: No se pudo cargar el comando\n");
+
         exit(1);
     } else {
         wait(NULL);
