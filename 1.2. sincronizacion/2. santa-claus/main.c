@@ -4,7 +4,6 @@
 #include <semaphore.h>
 #include <unistd.h>
 
-
 #define COLOR_ROJO "\x1b[31m"
 #define COLOR_VERDE "\x1b[92m"
 #define COLOR_AMARILLO "\x1b[33m"
@@ -15,7 +14,7 @@
 #define CANT_ELFOS 10
 #define MAX_ELFOS_PROBLEMAS 3
 
-#define TIEMPO 10000
+#define TIEMPO 10000 
 #define TIEMPO_LLEGADA 500000
 
 sem_t semSanta, semRenos, semElfos, cantRenos, cantElfos, semElfosSanta;
@@ -69,7 +68,7 @@ void* renos(void *arg) {
             }
         pthread_mutex_unlock(&mutexRenos);
         sem_wait(&semRenos); 
-        usleep(TIEMPO_LLEGADA); // simulación de llegada
+        // usleep(TIEMPO_LLEGADA); // simulación de llegada
     }
     pthread_exit(NULL); 
 }

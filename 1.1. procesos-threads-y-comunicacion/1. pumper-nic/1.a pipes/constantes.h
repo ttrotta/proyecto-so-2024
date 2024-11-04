@@ -14,6 +14,7 @@
 #define TAM sizeof(int)
 
 #define CANT_CLIENTES 5
+#define CANT_EMPLEADOS_PAPAS 2
 
 #define CLIENTE_VIP 0
 #define CLIENTE_NORMAL 1

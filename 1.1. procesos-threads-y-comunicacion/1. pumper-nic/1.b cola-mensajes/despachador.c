@@ -23,6 +23,7 @@ int main() {
             printf(YELLOW "El despachador atiende al cliente %d de tipo %s.\n" RESET, orden.id_cliente, tipo_cliente_s);
             usleep(TIME_U);
             orden.tipo = orden.menu;        
+            printf(DARK_YELLOW "El despachador manda a realizar un menu %d para el cliente %d de tipo %s.\n" RESET, orden.menu, orden.id_cliente, tipo_cliente_s);
             msgsnd(msg_id, &orden, LONGITUD, 0);
         } 
         else {

@@ -13,6 +13,8 @@
 #include <errno.h>
 
 #define CANT_CLIENTES 20
+#define CANT_EMPLEADOS_PAPAS 2
+#define CANT_ITERACIONES 10
 
 #define CLIENTE_VIP 1
 #define CLIENTE_NORMAL 2
@@ -28,14 +30,16 @@
 #define TIME_U 100000
 #define DIFERENCIADOR 10
 
-#define RESET       "\033[0m" 
-#define BLACK       "\033[0;30m"
-#define RED         "\033[0;31m"
-#define GREEN       "\033[0;32m"
-#define YELLOW      "\033[0;33m"
-#define BLUE        "\033[0;34m"
-#define MAGENTA     "\033[0;35m"
-#define CYAN        "\033[0;36m"
+#define RESET   "\033[0m" 
+#define BLACK   "\033[0;30m"
+#define RED     "\033[0;31m"
+#define GREEN   "\033[0;32m"
+#define YELLOW  "\033[0;33m"
+#define BLUE    "\033[0;34m"
+#define MAGENTA "\033[0;35m"
+#define CYAN    "\033[0;36m"
+#define ORANGE  "\x1b[38;5;208m"
+#define DARK_YELLOW "\033[0;33m"
 
 struct msg_buffer {
     long tipo;

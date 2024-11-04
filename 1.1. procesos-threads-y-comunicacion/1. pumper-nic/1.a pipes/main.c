@@ -53,6 +53,8 @@ void cliente_vip() {
     close(pipe_hamb_cli[0]);
     close(pipe_papas_cli[0]);
     close(pipe_veg_cli[0]);
+
+    exit(0);
 }
 
 void cliente_normal() {
@@ -98,6 +100,8 @@ void cliente_normal() {
     close(pipe_hamb_cli[0]);
     close(pipe_papas_cli[0]);
     close(pipe_veg_cli[0]);
+
+    exit(0);
 }
 
 void despachador() {
@@ -139,6 +143,8 @@ void despachador() {
     close(pipe_desp_hamb[1]);
     close(pipe_desp_papas[1]);
     close(pipe_desp_veg[1]);
+
+    exit(0);
 }
 
 void hamburguesa_simple() {
@@ -154,6 +160,8 @@ void hamburguesa_simple() {
 
     close(pipe_desp_hamb[0]);
     close(pipe_hamb_cli[1]);
+
+    exit(0);
 }
 
 void menu_vegano() {
@@ -169,6 +177,8 @@ void menu_vegano() {
 
     close(pipe_desp_veg[0]);
     close(pipe_veg_cli[1]);
+
+    exit(0);
 }
 
 void papas_fritas() {
@@ -184,13 +194,15 @@ void papas_fritas() {
     
     close(pipe_desp_papas[0]);
     close(pipe_papas_cli[1]);
+    
+    exit(0);
 }
 
 int main() {
     pid_t pid_desp;
     pid_t pid_empleado_hamb;
     pid_t pid_empleado_veg;
-    pid_t pid_empleado_papas[2];
+    pid_t pid_empleado_papas[CANT_EMPLEADOS_PAPAS];
     pid_t pid_cliente[CANT_CLIENTES];
 
     if (pipe(pipe_vip_desp) == -1 || pipe(pipe_normal_desp) == -1 || pipe(pipe_desp_hamb) == -1 || 
@@ -227,7 +239,7 @@ int main() {
         exit(1);
     }
 
-    for (int i = 0; i < 2; i++) {
+    for (int i = 0; i < CANT_EMPLEADOS_PAPAS; i++) {
         pid_empleado_papas[i] = fork();
         if (pid_empleado_papas[i] == 0) {
             papas_fritas(); 
@@ -266,6 +278,8 @@ int main() {
     kill(pid_empleado_veg, SIGTERM);
     kill(pid_empleado_papas[0], SIGTERM);
     kill(pid_empleado_papas[1], SIGTERM);
+
+    printf("\nLa casa de comidas cerró.\n");
 
     return 0;
 }
