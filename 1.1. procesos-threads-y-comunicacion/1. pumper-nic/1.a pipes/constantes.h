@@ -13,7 +13,7 @@
 #define MAX 256
 #define TAM sizeof(int)
 
-#define CANT_CLIENTES 5
+#define CANT_CLIENTES 10
 #define CANT_EMPLEADOS_PAPAS 2
 
 #define CLIENTE_VIP 0
@@ -23,7 +23,7 @@
 #define MENU_VEGANO 4
 #define PAPAS_FRITAS 5
 
-#define CANT_ITERACIONES 3
+#define CANT_ITERACIONES 5
 #define TIME 1
 
 #define COLOR_RESET "\033[0m"

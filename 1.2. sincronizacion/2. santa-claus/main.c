@@ -15,7 +15,7 @@
 #define MAX_ELFOS_PROBLEMAS 3
 
 #define TIEMPO 10000 
-#define TIEMPO_LLEGADA 500000
+#define TIEMPO_LLEGADA 200000
 
 sem_t semSanta, semRenos, semElfos, cantRenos, cantElfos, semElfosSanta;
 pthread_mutex_t mutexRenos, mutexElfos;
@@ -68,7 +68,7 @@ void* renos(void *arg) {
             }
         pthread_mutex_unlock(&mutexRenos);
         sem_wait(&semRenos); 
-        // usleep(TIEMPO_LLEGADA); // simulación de llegada
+        usleep(TIEMPO_LLEGADA); // simulación de llegada
     }
     pthread_exit(NULL); 
 }

@@ -12,7 +12,7 @@
 #define COLOR_CIAN "\x1b[36m"
 #define COLOR_RESET "\x1b[0m"
 
-#define TIME 1
+#define TIME 500000
 
 sem_t semRueda, semCuadro, semMotor, semPintores, semEquipamiento;
 
@@ -20,7 +20,7 @@ void *operarioRueda(void *arg) {
     while(1) {
         sem_wait(&semRueda);
         printf(COLOR_CIAN "El operario 1 arma una rueda.\n" COLOR_RESET);
-        sleep(TIME);
+        usleep(TIME);
         sem_post(&semCuadro);
     }
     pthread_exit(NULL);
@@ -31,7 +31,7 @@ void *operarioCuadro(void *arg) {
         sem_wait(&semCuadro);
         sem_wait(&semCuadro);
         printf(COLOR_AMARILLO "El operario 2 arma el cuadro (chasis).\n" COLOR_RESET);
-        sleep(TIME);
+        usleep(TIME);
         sem_post(&semMotor);
     }
     pthread_exit(NULL);
@@ -41,7 +41,7 @@ void *operarioMotor(void *arg) {
     while(1) {
         sem_wait(&semMotor);
         printf(COLOR_MAGENTA "El operario 3 agrega el motor al vehículo.\n" COLOR_RESET);
-        sleep(TIME);
+        usleep(TIME);
         sem_post(&semPintores);
     }
     pthread_exit(NULL);
@@ -51,7 +51,7 @@ void *operarioPintor1(void *arg) {
     while(1) {
         sem_wait(&semPintores);
         printf(COLOR_VERDE "El operario 4 pinta de verde la moto.\n" COLOR_RESET);
-        sleep(TIME);
+        usleep(TIME);
         sem_post(&semEquipamiento);
     }
     pthread_exit(NULL);
@@ -61,7 +61,7 @@ void *operarioPintor2(void *arg) {
     while(1) {
         sem_wait(&semPintores);
         printf(COLOR_ROJO "El operario 5 pinta de rojo la moto.\n" COLOR_RESET);
-        sleep(TIME);
+        usleep(TIME);
         sem_post(&semEquipamiento);
     }
     pthread_exit(NULL);
@@ -75,7 +75,7 @@ void *operarioEquipamientoExtra(void *arg) {
 
         sem_wait(&semEquipamiento);
         printf(COLOR_NARANJA "El operario 6 agrega equipamiento extra a la moto.\n" COLOR_RESET);
-        sleep(TIME);
+        usleep(TIME);
         sem_post(&semRueda);
         sem_post(&semRueda);
     }
