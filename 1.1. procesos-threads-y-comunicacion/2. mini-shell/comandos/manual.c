@@ -15,7 +15,7 @@ void mostrar_comandos() {
     printf("5 - show [ruta/nombre.txt]: Muestra el contenido del archivo correspondiente al nombre especificado en la ruta\n");
     printf("6 - modp [ruta/nombre]: Modifica los permisos del archivo correspondiente al nombre especificado en la ruta\n");
     printf("7 - manual: Muestra los comandos implementados en la shell\n");
-    printf("8 - salir: Cierra la shell\n");
+    printf("8 - exit: Cierra la shell\n");
     printf(ROJO " -------------------------------------------------------------- \n" RESET);
 }
 
