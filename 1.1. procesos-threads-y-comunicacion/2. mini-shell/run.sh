@@ -1,12 +1,22 @@
 #!/bin/bash
 
-# Se compila el archivo minishell.c en un ejecutable llamado minishell
+# Se cambia a la carpeta comandos
+cd comandos
+
+# Se compilan todos los archivos .c en la carpeta comandos
+for archivo in *.c; do
+    nombre=$(basename "$archivo" .c)
+    echo "Compilando $archivo..."
+    gcc -Wall "$archivo" -o "$nombre"
+done
+
+# Se vuelve a la carpeta principal /minishell
+cd ..
+
+# Se compila minishell.c
+echo "Compilando minishell.c..."
 gcc -Wall minishell.c -o minishell
 
-# Se verifica si la compilación fue exitosa
-if [ $? -eq 0 ]; then
-    # Ejecutar el ejecutable minishell
-    ./minishell
-else
-    echo "Error en la compilación de minishell.c"
-fi
+# Se ejecuta el programa minishell
+echo "Ejecutando minishell..."
+./minishell

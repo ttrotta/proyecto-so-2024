@@ -18,7 +18,7 @@ int main() {
 
     char entrada[MAX_CHAR]; 
     char *comando; 
-    char *args[2];
+    char *args[2]; 
 
     const char* usuario = getenv("USER"); 
 
@@ -29,7 +29,7 @@ int main() {
         fgets(entrada, sizeof(entrada), stdin);
 
         if (strlen(entrada) == MAX_CHAR + 1 && entrada[MAX_CHAR] != '\n') {
-            printf("Error: El comando ingresado supera la cantidad de caracteres permitidos (%d)\n", MAX_CHAR);
+            printf("ERROR: El comando ingresado es demasiado largo. Caracteres permitidos: %d\n", MAX_CHAR);
             limpiarBuffer(entrada);
             continue;
         }
@@ -52,12 +52,11 @@ int main() {
         ejecutarComando(comando, args);
     }
 
-    printf(AMARILLO "\n Sesión finalizada. \n" RESET);
+    printf(AMARILLO "\n --------------- Sesión finalizada. ---------------\n" RESET);
 
     return 0;
 }
 
-// ruta_comando -> ruta donde va a estar la imagen del ejecutable del comando que quiero ejecutar
 void ejecutarComando(char *comando, char *args[2]) {
     char ruta_comando[256];
     snprintf(ruta_comando, sizeof(ruta_comando), "./comandos/%s", comando);

@@ -13,7 +13,7 @@ int main(int argc, char** argv){
 	}
 	for(int i = 1; i < argc; i++){
 		archivo = fopen(argv[i], "r");
-		printf("===================================\n");
+		printf("---------------------------------------\n");
 		printf("Archivo %s:\n", argv[i]);
 		if(archivo != NULL){		
 			printf("\n");
@@ -22,10 +22,10 @@ int main(int argc, char** argv){
 			}
 			printf("\n");
 			fclose(archivo);
-		}else{
+		} else {
 			printf("\nHa ocurrido un error al abrir el archivo\n");
 		}
-		printf("===================================\n");
+		printf("---------------------------------------\n");
 	}
 
 	return 0;

@@ -10,9 +10,9 @@ int main(int argc, char* argv[]){
 	for(int i = 1; i < argc; i++) {
 		archivo = fopen(argv[i], "w");	
 		if(archivo != NULL){ 
-			printf("\nUsted ha creado un archivo con exito %s\n", argv[i]);
+			printf("\nSe ha creado un archivo con exito %s\n", argv[i]);
 			fclose(archivo);
-		}else{
+		} else {
 			fprintf(stderr, "\nHa ocurrido un error al crear el archivo %s\n", argv[i]);
 		}
 	}

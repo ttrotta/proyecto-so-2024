@@ -11,8 +11,8 @@ int main(int argc, char* argv[]){
 	for (int i = 1; i < argc; i++){
 		res = mkdir(argv[i], 0777);	
 		if(!res){
-			printf("\nUsted ha creado un directorio con exito %s\n", argv[i]);
-		}else{
+			printf("\nSe ha creado un directorio con exito %s\n", argv[i]);
+		} else {
 			fprintf(stderr, "\nHa ocurrido un error al crear el directorio %s\n", argv[i]);
 		}
 	}	
