@@ -14,10 +14,11 @@
 
 #define TIME 500000
 
-sem_t semRueda, semCuadro, semMotor, semPintores, semEquipamiento;
+sem_t semRueda, semCuadro, semMotor, semPintores, semEquipamiento, semControl;
 
 void *operarioRueda(void *arg) {
     while(1) {
+        sem_wait(&semControl);
         sem_wait(&semRueda);
         printf(COLOR_CIAN "El operario 1 arma una rueda.\n" COLOR_RESET);
         usleep(TIME);
@@ -52,6 +53,8 @@ void *operarioPintor1(void *arg) {
         sem_wait(&semPintores);
         printf(COLOR_VERDE "El operario 4 pinta de verde la moto.\n" COLOR_RESET);
         usleep(TIME);
+        sem_post(&semRueda);
+        sem_post(&semRueda);
         sem_post(&semEquipamiento);
     }
     pthread_exit(NULL);
@@ -62,6 +65,8 @@ void *operarioPintor2(void *arg) {
         sem_wait(&semPintores);
         printf(COLOR_ROJO "El operario 5 pinta de rojo la moto.\n" COLOR_RESET);
         usleep(TIME);
+        sem_post(&semRueda);
+        sem_post(&semRueda);
         sem_post(&semEquipamiento);
     }
     pthread_exit(NULL);
@@ -70,14 +75,13 @@ void *operarioPintor2(void *arg) {
 void *operarioEquipamientoExtra(void *arg) {
     while(1) {
         sem_wait(&semEquipamiento);
-        sem_post(&semRueda);
-        sem_post(&semRueda);
-
         sem_wait(&semEquipamiento);
         printf(COLOR_NARANJA "El operario 6 agrega equipamiento extra a la moto.\n" COLOR_RESET);
         usleep(TIME);
-        sem_post(&semRueda);
-        sem_post(&semRueda);
+        sem_post(&semControl);
+        sem_post(&semControl);
+        sem_post(&semControl);
+        sem_post(&semControl);
     }
     pthread_exit(NULL);
 }
@@ -89,7 +93,8 @@ int main() {
     sem_init(&semCuadro, 0, 0);
     sem_init(&semMotor, 0, 0);
     sem_init(&semPintores, 0, 0);
-    sem_init(&semEquipamiento, 0, 0);
+    sem_init(&semEquipamiento, 0, 1);
+    sem_init(&semControl, 0, 2);
 
     pthread_create(&rueda_t, NULL, operarioRueda, NULL);
     pthread_create(&cuadro_t, NULL, operarioCuadro, NULL);
@@ -110,6 +115,7 @@ int main() {
     sem_destroy(&semMotor);
     sem_destroy(&semPintores);
     sem_destroy(&semEquipamiento);
+    sem_destroy(&semControl);
 
     return 0;
 }
