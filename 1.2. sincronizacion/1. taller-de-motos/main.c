@@ -17,10 +17,10 @@
 sem_t semRueda, semCuadro, semMotor, semPintores, semEquipamiento, semControl;
 
 void *operarioRueda(void *arg) {
-    while(1) {
+    while (1) {
         sem_wait(&semControl);
         sem_wait(&semRueda);
-        printf(COLOR_CIAN "El operario 1 arma una rueda.\n" COLOR_RESET);
+        printf(COLOR_CIAN "A: El operario 1 arma una rueda.\n" COLOR_RESET);
         usleep(TIME);
         sem_post(&semCuadro);
     }
@@ -28,10 +28,10 @@ void *operarioRueda(void *arg) {
 }
 
 void *operarioCuadro(void *arg) {
-    while(1) {
+    while (1) {
         sem_wait(&semCuadro);
         sem_wait(&semCuadro);
-        printf(COLOR_AMARILLO "El operario 2 arma el cuadro (chasis).\n" COLOR_RESET);
+        printf(COLOR_AMARILLO "B: El operario 2 arma el cuadro (chasis).\n" COLOR_RESET);
         usleep(TIME);
         sem_post(&semMotor);
     }
@@ -39,9 +39,9 @@ void *operarioCuadro(void *arg) {
 }
 
 void *operarioMotor(void *arg) {
-    while(1) {
+    while (1) {
         sem_wait(&semMotor);
-        printf(COLOR_MAGENTA "El operario 3 agrega el motor al vehículo.\n" COLOR_RESET);
+        printf(COLOR_MAGENTA "C: El operario 3 agrega el motor al vehículo.\n" COLOR_RESET);
         usleep(TIME);
         sem_post(&semPintores);
     }
@@ -49,34 +49,34 @@ void *operarioMotor(void *arg) {
 }
 
 void *operarioPintor1(void *arg) {
-    while(1) {
+    while (1) {
         sem_wait(&semPintores);
-        printf(COLOR_VERDE "El operario 4 pinta de verde la moto.\n" COLOR_RESET);
+        printf(COLOR_VERDE "D: El operario 4 pinta de verde la moto.\n" COLOR_RESET);
         usleep(TIME);
-        sem_post(&semRueda);
-        sem_post(&semRueda);
         sem_post(&semEquipamiento);
+        sem_post(&semRueda);
+        sem_post(&semRueda);
     }
     pthread_exit(NULL);
 }
 
 void *operarioPintor2(void *arg) {
-    while(1) {
+    while (1) {
         sem_wait(&semPintores);
-        printf(COLOR_ROJO "El operario 5 pinta de rojo la moto.\n" COLOR_RESET);
+        printf(COLOR_ROJO "E: El operario 5 pinta de rojo la moto.\n" COLOR_RESET);
         usleep(TIME);
-        sem_post(&semRueda);
-        sem_post(&semRueda);
         sem_post(&semEquipamiento);
+        sem_post(&semRueda);
+        sem_post(&semRueda);
     }
     pthread_exit(NULL);
 }
 
 void *operarioEquipamientoExtra(void *arg) {
-    while(1) {
+    while (1) {
         sem_wait(&semEquipamiento);
         sem_wait(&semEquipamiento);
-        printf(COLOR_NARANJA "El operario 6 agrega equipamiento extra a la moto.\n" COLOR_RESET);
+        printf(COLOR_NARANJA "F: El operario 6 agrega equipamiento extra a la moto.\n" COLOR_RESET);
         usleep(TIME);
         sem_post(&semControl);
         sem_post(&semControl);
@@ -93,8 +93,12 @@ int main() {
     sem_init(&semCuadro, 0, 0);
     sem_init(&semMotor, 0, 0);
     sem_init(&semPintores, 0, 0);
-    sem_init(&semEquipamiento, 0, 1);
-    sem_init(&semControl, 0, 2);
+    sem_init(&semEquipamiento, 0, 0);
+    sem_init(&semControl, 0, 4); 
+    
+    // Para que el equipamiento extra se agregue comenzando por la primera moto: 
+    // Inicializar semEquipamiento = 1
+    // Inicializar semControl = 2
 
     pthread_create(&rueda_t, NULL, operarioRueda, NULL);
     pthread_create(&cuadro_t, NULL, operarioCuadro, NULL);
